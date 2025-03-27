@@ -1,0 +1,57 @@
+name: Release VS Code Extension
+
+on:
+  push:
+    branches:
+      - main # 自动触发条件：代码合入到 main 分支
+  workflow_dispatch: # 手动触发条件
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Update version in package.json
+      id: update_version
+      run: |
+        TIMESTAMP=$(date -u +"%y%m%d-%H%M")
+        jq ".version = \"$TIMESTAMP\"" package.json > package.json.tmp && mv package.json.tmp package.json
+        echo "VERSION=$TIMESTAMP" >> $GITHUB_ENV
+    - name: Build VS Code extension
+      run: |
+        npm install -g @vscode/vsce
+        vsce package
+    - name: Upload to VS Code Marketplace
+      env:
+        VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      run: |
+        vsce publish --pat $VSCE_PAT
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      with:
+        tag_name: "v${{ env.VERSION }}"
+        release_name: "Release v${{ env.VERSION }}"
+        body: |
+          This release includes the following changes:
+          - Updated version to ${{ env.VERSION }}
+        draft: false
+        prerelease: false
+
+    - name: Upload VSIX to Release
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: "*.vsix"
+        asset_name: replace-of-rules-${{ env.VERSION }}.vsix
+        asset_content_type: application/octet-stream
