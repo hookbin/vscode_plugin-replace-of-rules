@@ -40,6 +40,7 @@ jobs:
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
       run: |
         vsce publish --pat $VSCE_PAT
+        
     - name: Create GitHub Release
       uses: actions/create-release@v1
       with:
@@ -50,6 +51,8 @@ jobs:
           - Updated version to ${{ env.VERSION }}
         draft: false
         prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload VSIX to Release
       uses: actions/upload-release-asset@v1
