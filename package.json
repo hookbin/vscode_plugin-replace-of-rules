@@ -1,7 +1,12 @@
 {
   "name": "replace-of-rules",
-  "displayName": "Replace of Rules",
-  "description": "根据规则对文本进行显示替换或修改。",
+  "displayName": "ROR - Replace of Rules",
+  "author": "hookbin",
+  "icon": "res/icon.png",
+  "license": "MIT",
+  "publisher": "hookbin",
+  "description": "根据规则对文本进行批量替换或高亮。（Batch replace or highlight text according to rules）",
+  "repository": "https://github.com/hookbin/vscode_plugin-replace-of-rules",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.0.0"
