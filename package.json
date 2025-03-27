@@ -1,0 +1,86 @@
+{
+  "name": "replace-of-rules",
+  "displayName": "Replace of Rules",
+  "description": "根据规则对文本进行显示替换或修改。",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.0.0"
+  },
+  "main": "./src/extension.js",
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onDidOpenTextDocument"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.replaceText",
+        "title": "ROR - Replace Text (Edit file)",
+        "category": "Replace of Rules",
+        "icon": "res/replaceText.svg"
+      },
+      {
+        "command": "extension.replaceShow",
+        "title": "ROR - Replace Show (Read only)",
+        "category": "Replace of Rules",
+        "icon": "res/replaceText.svg"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "extension.replaceText",
+          "when": "editorTextFocus",
+          "group": "z_navigation"
+        },
+        {
+          "command": "extension.replaceShow",
+          "when": "editorTextFocus",
+          "group": "z_navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Replace of Rules",
+      "properties": {
+        "replaceOfRules.modifyDocument": {
+          "type": "boolean",
+          "default": false,
+          "description": "是否修改文档内容（Whether to modify the document content）。如果为 true，将直接修改文档内容；如果为 false，仅在显示时替换。"
+        },
+        "replaceOfRules.decorationType.color": {
+          "type": "string",
+          "default": "#000000",
+          "description": "装饰器文字颜色（Decorator text color）。Default: black。"
+        },
+        "replaceOfRules.decorationType.backgroundColor": {
+          "type": "string",
+          "default": "rgba(255, 255, 0, 0.5)",
+          "description": "装饰器背景颜色（Decorator background color）。Default: rgba(255, 255, 0, 0.5)。"
+        },
+        "replaceOfRules.decorationType.borderColor": {
+          "type": "string",
+          "default": "black",
+          "description": "装饰器边框颜色（Decorator border color）。Default: black。"
+        },
+        "replaceOfRules.decorationType.borderWidth": {
+          "type": "string",
+          "default": "1px",
+          "description": "装饰器边框宽度（Decorator border width）。Default: 1px。"
+        },
+        "replaceOfRules.decorationType.borderRadius": {
+          "type": "string",
+          "default": "3px",
+          "description": "装饰器边框圆角（Decorator border radius）。Default: 3px。"
+        },
+        "replaceOfRules.decorationType.padding": {
+          "type": "string",
+          "default": "2px",
+          "description": "装饰器内边距（Decorator padding）。Default: 2px。"
+        }
+      }
+    }
+  }
+}
