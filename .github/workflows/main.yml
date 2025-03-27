@@ -25,9 +25,9 @@ jobs:
     - name: Update version in package.json
       id: update_version
       run: |
-        TIMESTAMP=$(date -u +"%y%m%d-%H%M")
+        TIMESTAMP=$(date -u -d "+8 hours" +"%y%m%d%H%M")
         jq ".version = \"$TIMESTAMP\"" package.json > package.json.tmp && mv package.json.tmp package.json
-        echo "VERSION=$TIMESTAMP" >> $GITHUB_ENV
+        echo "VERSION=0.0.$TIMESTAMP" >> $GITHUB_ENV
     - name: Build VS Code extension
       run: |
         npm install -g @vscode/vsce
