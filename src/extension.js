@@ -74,30 +74,36 @@ function activate(context) {
             }
             replaceRules[pattern] = replacement;
         });
-        // 获取用户配置
-        if (modifyDocument === null) {
-            const replaceOfRulesConfig = vscode.workspace.getConfiguration('replaceOfRules');
-            modifyDocument = replaceOfRulesConfig.get('modifyDocument', false);
-        }
         if (modifyDocument) {
             // 方案 1：修改文档内容
             const edits = [];
+            const decorations = []; // 用于存储高亮装饰
             for (const [pattern, replacement] of Object.entries(replaceRules)) {
                 const regex = new RegExp(pattern, 'g');
                 let match;
                 while ((match = regex.exec(editor.document.getText())) !== null) {
-                    const range = editor.document.getWordRangeAtPosition(editor.document.positionAt(match.index));
-                    if (range) {
-                        const displayText = `${match[0]}=${replacement}`;
-                        edits.push(vscode.TextEdit.replace(range, displayText));
-                    }
+                    const startPos = editor.document.positionAt(match.index);
+                    const endPos = editor.document.positionAt(match.index + match[0].length);
+                    const range = new vscode.Range(startPos, endPos);
+
+                    // 动态生成替换内容：原内容 + 替换后的内容
+                    const newText = `[${replacement}]`;
+                    edits.push({ range, newText });
                 }
             }
-            editor.edit(editBuilder => {
-                edits.forEach(edit => editBuilder.replace(edit.range, edit.newText));
-            }).then(() => {
-                vscode.window.showInformationMessage('Text replacement completed');
-            });
+            if (edits.length > 0) {
+                editor.edit(editBuilder => {
+                    edits.forEach(edit => editBuilder.replace(edit.range, edit.newText));
+                }).then(success => {
+                    if (success) {
+                        vscode.window.showInformationMessage('文档内容替换完成');
+                    } else {
+                        vscode.window.showErrorMessage('文档内容替换失败');
+                    }
+                });
+            } else {
+                vscode.window.showWarningMessage('未找到匹配的内容进行替换');
+            }
         } else {
             // 方案 2：仅在显示时替换
             const decorations = [];
@@ -125,9 +131,9 @@ function activate(context) {
 
     // 注册命令
     const disposableReplaceShow = vscode.commands.registerCommand('extension.replaceShow', async () => { await disposableReplace(false) });
-    context.subscriptions.push(disposableReplaceText);
-    const disposableReplaceText = vscode.commands.registerCommand('extension.replaceText', async () => { await disposableReplace(true) });
     context.subscriptions.push(disposableReplaceShow);
+    const disposableReplaceText = vscode.commands.registerCommand('extension.replaceText', async () => { await disposableReplace(true) });
+    context.subscriptions.push(disposableReplaceText);
 }
 
 function getDecorationType() {
