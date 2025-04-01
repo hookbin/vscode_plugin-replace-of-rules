@@ -62,3 +62,6 @@ jobs:
         asset_path: replace-of-rules-${{ env.VERSION }}.vsix
         asset_name: replace-of-rules-${{ env.VERSION }}.vsix
         asset_content_type: application/octet-stream
+      env:
+        GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+      
